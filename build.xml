@@ -1,0 +1,55 @@
+<!-- Script de compilation -->
+<project name="tdtp7" default="dist" basedir=".">
+
+  <!-- Proprietes. -->
+  <property name="src" location="src"/>
+  <property name="build" location="build"/>
+  <property name="dist"  location="dist"/>
+
+  <!-- Arborescence de compilation. -->
+  <target name="init">
+    <mkdir dir="${build}/exercice1/ressources/images"/>
+    <copy todir="${build}/ressources/images" >
+      <fileset dir="${src}/exercice1/ressources/images">
+	<include name="**/*"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <!-- Compilation des sources. -->
+  <target name="compile" depends="init" >
+    <javac srcdir="${src}" destdir="${build}" includeAntRuntime="no"/>
+  </target>
+
+  <!-- Distribution via un jar. -->
+  <target name="dist" depends="compile" >
+    <mkdir dir="${dist}/lib"/>
+    <jar jarfile="${dist}/lib/tdtp7.jar" basedir="${build}">
+      <manifest>
+	<attribute name="Main-Class" 
+		   value="tdtp7/exercice1/client/Client"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <!-- Run -->
+  <target name="run">
+    <java jar="${dist}/lib/tdtp7.jar" fork="true">
+      <arg line="5 10 5" />
+    </java>
+  </target>
+
+  <!-- documentation -->
+  <target name="doc">
+    <javadoc packagenames="tdtp7.*" 
+	     sourcepath="${src}" destdir="apidoc"/>
+  </target>
+
+  <!-- Nettoyage. -->
+  <target name="clean" >
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+  </target>
+
+
+</project>
