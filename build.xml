@@ -1,55 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+Alexis Prevost Mayhen
+Guillaume Drouart
+Lucas Gouedant
+Nicolas Vatel
+L3 Informatique 2016/2017 POO
+-->
+
 <!-- Script de compilation -->
-<project name="tdtp7" default="dist" basedir=".">
+<project name="Grenouilloland" basedir="." default="all">
 
-  <!-- Proprietes. -->
-  <property name="src" location="src"/>
-  <property name="build" location="build"/>
-  <property name="dist"  location="dist"/>
+    <!-- Proprietes. -->
+    <property name="src.dir" value="${basedir}/src"/>
+    <property name="bin" location="${basedir}/bin"/>
+    <property name="jar" location="${basedir}/jar"/>
+    <property name="doc" location="${basedir}/doc"/>
+    <property name="ressources" value="${basedir}/ressources" />
+    <property name="bin.ressources" value="${basedir}/bin/ressources"/>
+    <property name="name" value="Grenouilloland"/>
+    <property name="javac.version" value="1.8"/>
+    <property name="javac.encoding" value="UTF-8"/>
 
-  <!-- Arborescence de compilation. -->
-  <target name="init">
-    <mkdir dir="${build}/exercice1/ressources/images"/>
-    <copy todir="${build}/ressources/images" >
-      <fileset dir="${src}/exercice1/ressources/images">
-	<include name="**/*"/>
-      </fileset>
-    </copy>
-  </target>
 
-  <!-- Compilation des sources. -->
-  <target name="compile" depends="init" >
-    <javac srcdir="${src}" destdir="${build}" includeAntRuntime="no"/>
-  </target>
+    <!-- Proprietes des compilation -->
+    <property name="compile.debug" value="true"/>
+    <property name="compile.deprecation" value="false"/>
+    <property name="compile.optimize" value="true"/>
 
-  <!-- Distribution via un jar. -->
-  <target name="dist" depends="compile" >
-    <mkdir dir="${dist}/lib"/>
-    <jar jarfile="${dist}/lib/tdtp7.jar" basedir="${build}">
-      <manifest>
-	<attribute name="Main-Class" 
-		   value="tdtp7/exercice1/client/Client"/>
-      </manifest>
-    </jar>
-  </target>
+    <!-- ==================== All Target ======================================-->
+    <target name="all" depends="clean,compile,doc,jar,run" description="Clean build and dist directories, then compile"/>
 
-  <!-- Run -->
-  <target name="run">
-    <java jar="${dist}/lib/tdtp7.jar" fork="true">
-      <arg line="5 10 5" />
-    </java>
-  </target>
 
-  <!-- documentation -->
-  <target name="doc">
-    <javadoc packagenames="tdtp7.*" 
-	     sourcepath="${src}" destdir="apidoc"/>
-  </target>
 
-  <!-- Nettoyage. -->
-  <target name="clean" >
-    <delete dir="${build}"/>
-    <delete dir="${dist}"/>
-  </target>
+    <!-- Compilation des sources. -->
+    <target name="compile" description="Compile source tree java files">
+        <mkdir dir="${bin}"/>
+        <javac srcdir="${src.dir}" destdir="${bin}" debug="${compile.debug}"
+               deprecation="${compile.deprecation}" optimize="${compile.optimize}"
+               source="${javac.version}" encoding="${javac.encoding}">
+        </javac>
+        <copy todir="${bin.ressources}">
+            <fileset dir="${ressources}" excludes="**/*.java"/>
+        </copy>
+        <echo message="Compilation terminee"/>
+    </target>
+
+    <!-- Jar -->
+    <target name="jar">
+        <mkdir dir="${jar}"/>
+        <jar destfile="jar/Grenouilloland.jar" basedir="${jar}">
+            <manifest>
+                <attribute name="Main-Class" value="Main"/>
+            </manifest>
+        </jar>
+        <echo message="Creation du fichier Grenouilloland.jar terminee"/>
+    </target>
+
+    <!-- Javadoc -->
+    <target name="doc" depends="compile" description="Create Javadoc API documentation" >
+        <mkdir dir="${doc}"/>
+        <javadoc sourcepath="${src.dir}" destdir="${doc}" >
+            <classpath>
+                <fileset dir="src" defaultexcludes="yes">
+                    <include name="**" />
+                </fileset>
+            </classpath>
+        </javadoc>
+        <echo message="Creation de la Javadoc terminee"/>
+    </target>
+
+
+    <!-- Clean -->
+    <target name="clean" description="Clean output directories">
+        <delete dir="${bin}"/>
+        <delete dir="${jar}"/>
+        <delete dir="${doc}"/>
+        <echo message="nettoyage termine"/>
+    </target>
+
+    <!-- Run -->
+    <target name="run">
+        <java fork="true" failonerror="yes" dir="${bin}" classname="grenouilloland.Main" >
+            <arg value="ressources"/>
+            <arg line=""/>
+        </java>
+    </target>
+
 
 
 </project>
